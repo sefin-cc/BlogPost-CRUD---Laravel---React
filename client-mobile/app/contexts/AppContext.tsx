@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 interface AppContextType {
   token: string | null;
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
-  user: any; 
+  user: any | null; 
   setUser: React.Dispatch<React.SetStateAction<any>>;
 }
 

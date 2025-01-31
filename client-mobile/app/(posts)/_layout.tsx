@@ -1,10 +1,11 @@
-import { IconSymbol } from '../../components/ui/IconSymbol';
-import { Tabs, useRouter } from 'expo-router';
-import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
-import { Text, View , StyleSheet, ActivityIndicator} from 'react-native';
-import { AppContext } from '../contexts/AppContext';
+import { Stack, useRouter } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../contexts/AppContext";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { BackButton } from "@/components/ui/backbutton";
 
-export default function TabLayout() {
+export default function PostLayout() {
   const context = useContext(AppContext);
   const router = useRouter();
 
@@ -22,7 +23,7 @@ export default function TabLayout() {
     // Wait until the layout is ready
     setIsLayoutReady(true);
   }, []);
-  
+
   useEffect(() => {
     if (isLayoutReady) {
       const checkAuthStatus = () => {
@@ -44,39 +45,35 @@ export default function TabLayout() {
       </View>
     );
   }
+
+
+
   return (
-    <Tabs
-    screenOptions={{
-        headerShown: false, 
-        tabBarLabel: () => null,
-        tabBarStyle: {
-          backgroundColor: '#1e1e1e', 
-          borderTopWidth: 0, 
-        },
-        tabBarActiveTintColor: '#ff6347', 
-        tabBarInactiveTintColor: '#a9a9a9', 
-      }}>
-      <Tabs.Screen
-        name="index"
+    <Stack>
+      <Stack.Screen
+        name="viewpost"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.rounded"  color={color} />,
+          headerShown: true,
+          title: "View Post",
+          headerLeft: () => (
+            <BackButton />
+          ),
         }}
       />
-      <Tabs.Screen
-        name="createPost"
+      <Stack.Screen
+        name="updatepost"
         options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="plus.rounded" color={color} />,
+          headerShown: true,
+          title: "Update Post",
+          headerLeft: () => (
+            <BackButton />
+          ),
         }}
       />
-       <Tabs.Screen
-        name="userSettings"
-        options={{
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="user.rounded" color={color} />,
-        }}
-      />
-    </Tabs>
+    </Stack>
   );
 }
+
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,

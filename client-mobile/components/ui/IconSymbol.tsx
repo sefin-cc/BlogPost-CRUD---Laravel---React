@@ -8,6 +8,7 @@ const MAPPING = {
   "house.rounded": "home",
   "plus.rounded": "add", // "plus" doesn't exist in MaterialIcons, use "add"
   "user.rounded": "person",
+  "keyboardarrowleft.rounded": "arrow-back",
 } as const; // ✅ Use `as const` to preserve strict typings
 
 export type IconSymbolName = keyof typeof MAPPING;

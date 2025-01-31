@@ -2,9 +2,11 @@ import CreatePost from "@/app/(tabs)/createPost";
 import axios from "axios";
 import React, { useContext } from "react";
 import { useEffect, useState } from "react";
-import { Text, View, StyleSheet, StatusBar, SafeAreaView, FlatList, ActivityIndicator, Button, Modal } from "react-native";
+import { Text, View, StyleSheet, StatusBar, SafeAreaView, FlatList, ActivityIndicator, Button, Modal, Pressable } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { AppContext } from "../contexts/AppContext";
+import API from "@/utils/api";
+import { router, useLocalSearchParams } from "expo-router";
 
 interface Post {
   id: string;
@@ -23,11 +25,12 @@ export default function Index() {
   const [post, setPost] = useState<Post[]>([]); 
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const { refresh } = useLocalSearchParams(); 
 
   const getPost = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/posts");
+      const res = await API.get("/posts");
   
       if (res.status === 200) { 
         console.log("Fetched Data:", res.data);
@@ -49,11 +52,16 @@ export default function Index() {
     getPost();
     setRefreshing(false);
   }
+  const handlePostPress = (id: string) => {
+    router.push(`/viewpost?id=${id}`);
+  };
 
   useEffect(() => {
     getPost();
   }, []);
-
+  useEffect(() => {
+    getPost();
+  }, [refresh]); 
   return (
     <SafeAreaView style={styles.container}>
         {isLoading ? (
@@ -67,14 +75,14 @@ export default function Index() {
             data={post}
             keyExtractor={(item) => item.id.toString()} 
             renderItem={({ item }) => ( 
-              <View style={styles.postContainer}>
+              <Pressable  style={styles.postContainer} onPress={() =>handlePostPress(item.id)}>
                 <Text style={styles.title}>{item.title}</Text>
                 <Text>
                   Created by {item.user?.name ?? "Unknown"} on{" "}
                   {item.created_at ? new Date(item.created_at).toLocaleDateString() : "N/A"}
                 </Text>
                 <Text style={styles.bodyText}>{item.body}</Text>
-              </View>
+              </Pressable >
             )}
             ItemSeparatorComponent={() => <View style={{height:16}}></View>}
             ListEmptyComponent={<Text>No Post found</Text>}

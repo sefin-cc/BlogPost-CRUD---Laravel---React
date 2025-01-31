@@ -18,11 +18,8 @@ interface Post {
   };
 }
 
-interface Props {
-    setIsCreatePostModal: React.Dispatch<React.SetStateAction<boolean>>;
-}
 
-export default function CreatePost({setIsCreatePostModal}: Props) {
+export default function UpdatePost( ) {
     const context = useContext(AppContext);
     if (!context) {
       return <Text>Error: AppContext is not available</Text>;
