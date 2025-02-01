@@ -1,22 +1,12 @@
-import { AppContext } from "@/app/contexts/AppContext";
+import { AppContext } from "../contexts/AppContext";
 import API from "@/utils/api";
 import axios from "axios";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext } from "react";
 import { useEffect, useState } from "react";
-import { Text, View, StyleSheet, StatusBar, SafeAreaView, FlatList, ActivityIndicator, Button } from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, ActivityIndicator, Button, TouchableOpacity } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
-
-interface Post {
-  id: string;
-  user_id: string;
-  title: string;
-  body: string;
-  created_at: string;
-  user: {
-    name: string;
-  };
-}
+import globalStyles from '../../assets/styles/globalstyles';
 
 
 export default function UpdatePost( ) {
@@ -24,25 +14,41 @@ export default function UpdatePost( ) {
     if (!context) {
       return <Text>Error: AppContext is not available</Text>;
     }
-    const {token} = context;
+
+    const { id } = useLocalSearchParams();
     const router = useRouter();
-    const [post, setPost] = useState<Post[]>([]); 
     const [isLoading, setIsLoading] = useState(false);
-    const [isPosting, setIsPosting] = useState(false);
-    const [ errors, setErrors] = useState({
-      title: '',
-      body: '',
-    });
+    const [isUpdating, setisUpdating] = useState(false);
+    const [errors, setErrors] = useState<{ title?: string[]; body?: string[] }>({});
     const [formData, setFormData] = useState({
         title: '',
         body: '',
     });
 
-const handleCreate = async () => {
-  setIsLoading(true);
+    const getPost = async () => {
+      setIsLoading(true);
+      try {
+        const res = await API.get(`/posts/${id}`);
+        if (res.status === 200) {
+          setFormData({  title: res.data.post.title, body: res.data.post.body});
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error("Error fetching post:", error.response?.data || error.message);
+        } else {
+          console.error("Unexpected error:", error);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+
+const handleUpdate = async () => {
+  setisUpdating(true);
 
   try {
-    const res = await API.post("/posts", formData);
+    const res = await API.put(`/posts/${id}`, formData);
     const data = res.data;
 
     if (data.errors) {
@@ -64,29 +70,58 @@ const handleCreate = async () => {
       console.error("Unexpected error:", error);
     }
   } finally {
-    setIsLoading(false);
+    setisUpdating(false);
   }
 };
+
+  useEffect(() => {
+    getPost();
+  },[])
 
 
   return (
     <SafeAreaView style={styles.container}>
-        {isLoading ? (
-          <View style={styles.loading}>
-              <ActivityIndicator size="large" color="#0000ff" /> 
-              <Text>Loading...</Text>
-          </View>
-          
-        ) : (
-        <View style={styles.inputContainer}>
-          <TextInput style={styles.input} placeholder="Post Title" value={formData.title} onChangeText={(text) => setFormData((prev) => ({ ...prev, title: text }))} />
-          { errors.title && <Text style={styles.errorText}>{errors.title[0]}</Text> }
-          <TextInput style={styles.input} placeholder="Post Body" value={formData.body} onChangeText={(text) => setFormData((prev) => ({ ...prev, body: text }))}/>
-          { errors.body && <Text style={styles.errorText}>{errors.body[0]}</Text> }
-          <Button title={isPosting ? "Posting..." : "Add Post"} onPress={handleCreate} disabled={isPosting}/>
-        </View> 
-        )}
+      {isLoading ? (
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" color="#ff6347" />
+          <Text>Loading...</Text>
+        </View>
+      ) : (
+        <View style={globalStyles.inputContainer}>
+        <View>
+        <TextInput style={globalStyles.input} placeholder="Post Title"  placeholderTextColor="#888"  value={formData.title} onChangeText={(text) => setFormData((prev) => ({ ...prev, title: text }))} />
+            {errors.title && errors.title[0] && (
+              <View>
+                <Text style={globalStyles.errorText}>{errors.title[0]}</Text>
+              </View>
+            )}
+        </View>
+        <View >
+          <TextInput style={globalStyles.input}  placeholder="Post Body"    multiline 
+            numberOfLines={4}  placeholderTextColor="#888"  value={formData.body} onChangeText={(text) => setFormData((prev) => ({ ...prev, body: text }))}/>
+          {errors.body && errors.body[0] && (
+              <View>
+                <Text style={globalStyles.errorText}>{errors.body[0]}</Text>
+              </View>
+            )}
+        </View>
+                  
+        <TouchableOpacity
+          onPress={handleUpdate}
+          disabled={isUpdating}
+          style={[
+            globalStyles.button,
+            isUpdating && { backgroundColor: '#ccc' }, 
+          ]}
+        >
+          <Text style={globalStyles.buttonText}>
+            {isUpdating ? "Updating..." : "Update Post"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      )}
     </SafeAreaView>
+
   );
 }
 

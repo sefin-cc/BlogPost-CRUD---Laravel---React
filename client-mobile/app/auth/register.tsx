@@ -4,20 +4,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useRouter } from "expo-router";
 import React, { useContext } from "react";
-import { useEffect, useState } from "react";
-import { Text, View, StyleSheet, StatusBar, SafeAreaView, FlatList, ActivityIndicator, Button } from "react-native";
+import { useState } from "react";
+import { Text, View, StyleSheet, SafeAreaView, ActivityIndicator, Button, TouchableOpacity, StatusBar } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
+import globalStyles from '../../assets/styles/globalstyles';
 
-interface Post {
-  id: string;
-  user_id: string;
-  title: string;
-  body: string;
-  created_at: string;
-  user: {
-    name: string;
-  };
-}
 
 export default function Register() {
     const context = useContext(AppContext);
@@ -74,26 +65,64 @@ export default function Register() {
       };
   return (
     <SafeAreaView style={styles.container}>
-        {isLoading ? (
-          <View style={styles.loading}>
-              <ActivityIndicator size="large" color="#0000ff" /> 
-              <Text>Loading...</Text>
-          </View>
-          
-        ) : (
-        <View style={styles.inputContainer}>
-            <TextInput style={styles.input} placeholder="Name" value={formData.name} onChangeText={(text) => setFormData((prev) => ({ ...prev, name: text }))} />
-            { errors.name && <Text style={styles.errorText}>{errors.name[0]}</Text> }
-          <TextInput style={styles.input} placeholder="Email" value={formData.email} onChangeText={(text) => setFormData((prev) => ({ ...prev, email: text }))} />
-          { errors.email && <Text style={styles.errorText}>{errors.email[0]}</Text> }
-          <TextInput style={styles.input} placeholder="Password" value={formData.password} onChangeText={(text) => setFormData((prev) => ({ ...prev, password: text }))}/>
-          { errors.password && <Text style={styles.errorText}>{errors.password[0]}</Text> }
-          <TextInput style={styles.input} placeholder="Password" value={formData.password_confirmation} onChangeText={(text) => setFormData((prev) => ({ ...prev, password_confirmation: text }))}/>
-      
-          <Button title={isLoading ? "Registering..." : "Register"} onPress={handleRegister} disabled={isLoading}/>
-          
-        </View> 
-        )}
+        <View style={globalStyles.inputContainer}>
+          <Text style={{fontSize: 36, color: "#666666", width: "100%", textAlign: "center", fontWeight: "bold"}}>Register</Text>
+        
+        <View>
+        <TextInput style={globalStyles.input} placeholder="Name"  placeholderTextColor="#888"  value={formData.name} onChangeText={(text) => setFormData((prev) => ({ ...prev, name: text }))} />
+            {errors.name && errors.name[0] && (
+              <View>
+                <Text style={globalStyles.errorText}>{errors.email[0]}</Text>
+              </View>
+            )}
+        </View>
+        <View>
+        <TextInput style={globalStyles.input} placeholder="Email"  placeholderTextColor="#888"  value={formData.email} onChangeText={(text) => setFormData((prev) => ({ ...prev, email: text }))} />
+            {errors.email && errors.email[0] && (
+              <View>
+                <Text style={globalStyles.errorText}>{errors.email[0]}</Text>
+              </View>
+            )}
+        </View>
+        <View >
+          <TextInput style={globalStyles.input}  placeholder="Password"  secureTextEntry={true}
+           placeholderTextColor="#888"  value={formData.password} onChangeText={(text) => setFormData((prev) => ({ ...prev, password: text }))}/>
+          {errors.password && errors.password[0] && (
+              <View>
+                <Text style={globalStyles.errorText}>{errors.password[0]}</Text>
+              </View>
+            )}
+        </View>
+        <View >
+          <TextInput style={globalStyles.input}  placeholder="Confirm Password"  secureTextEntry={true}
+           placeholderTextColor="#888"  value={formData.password_confirmation} onChangeText={(text) => setFormData((prev) => ({ ...prev, password_confirmation: text }))}/>
+        </View>
+                  
+        <TouchableOpacity
+          onPress={handleRegister}
+          disabled={isLoading}
+          style={[
+            globalStyles.button,
+            isLoading && { backgroundColor: '#ccc' }, 
+          ]}
+        >
+          <Text style={globalStyles.buttonText}>
+            {isLoading ? "Registering..." : "Register"}
+          </Text>
+        </TouchableOpacity>
+        <Text style={{fontSize: 16, color: "#666666", width: "100%", textAlign: "center"}}>
+            or
+          </Text>
+        <TouchableOpacity
+          onPress={() => router.push("/auth/login")}
+          style={[globalStyles.button, {backgroundColor: '#1e1e1e'}]}>
+          <Text style={globalStyles.buttonText}>
+            Login
+          </Text>
+        </TouchableOpacity>
+
+
+        </View>
     </SafeAreaView>
   );
 }
@@ -101,52 +130,9 @@ export default function Register() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin:"5%",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  bodyText:{
-    fontSize: 16,
-    color: "#666666"
-  },
-  headerText:{
-    fontSize: 24,
-    marginBottom: 12,
-    textAlign: "center"
-  },
-  loading: {
-    flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    margin: "5%",
+    paddingTop: StatusBar.currentHeight,
     textAlign: "center",
-    gap: 5
-  },
-  inputContainer: {
-    padding: 16,
-    margin: 16,
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 8,
-    padding: 8,
-    borderRadius: 8,
-  },
-  errorContainer: {
-    backgroundColor: "#FFC0CB",
-    padding: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    margin: 16,
-    alignItems: "center",
-  },
-  errorText: {
-    color: "#D8000C",
-    fontSize: 16,
-    textAlign: "center",
-  },
-
+  }
 });

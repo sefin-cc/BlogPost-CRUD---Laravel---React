@@ -5,11 +5,11 @@ import React from "react";
 
 
 
+
 export default function RootLayout() {
  
   return (
     <AppProvider>
-  
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(posts)"  options={{ headerShown: false }}/>

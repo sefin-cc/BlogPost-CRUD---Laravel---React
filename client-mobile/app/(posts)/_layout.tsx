@@ -55,6 +55,9 @@ export default function PostLayout() {
         options={{
           headerShown: true,
           title: "View Post",
+          headerTitleAlign: "center", 
+          headerStyle: { backgroundColor: "#1e1e1e" },
+          headerTintColor: "#fff", 
           headerLeft: () => (
             <BackButton />
           ),
@@ -64,6 +67,9 @@ export default function PostLayout() {
         name="updatepost"
         options={{
           headerShown: true,
+          headerTitleAlign: "center", 
+          headerStyle: { backgroundColor: "#1e1e1e" },
+          headerTintColor: "#fff", 
           title: "Update Post",
           headerLeft: () => (
             <BackButton />

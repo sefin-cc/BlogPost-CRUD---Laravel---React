@@ -59,3 +59,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     </AppContext.Provider>
   );
 };
+
+// ✅ Add default export
+export default AppProvider;
